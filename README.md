@@ -1,6 +1,6 @@
 # AI Chatbot (FastAPI backend + React TS frontend)
 
-Monorepo for a streaming chat app with file uploads and optional RAG. Frontend is React + Vite; backend is FastAPI with SSE and providers for Gemini or local Ollama.
+Monorepo for a streaming chat app with file uploads and optional RAG. Frontend is React + Vite; backend is FastAPI with SSE and providers for OpenAI, Gemini or local Ollama.
 
 - Frontend: [frontend/](frontend)
   - App entry: [frontend/src/main.tsx](frontend/src/main.tsx), routes in [frontend/src/App.tsx](frontend/src/App.tsx)
@@ -27,7 +27,7 @@ Monorepo for a streaming chat app with file uploads and optional RAG. Frontend i
 ## Technologies
 1. Frontend: React with TypeScript
 2. Backend: Python (FastAPI)
-3. LLM: Ollama and Gemini
+3. LLM: OpenAI, Ollama and Gemini
 4. File parsing: PyPDF2, pandas
 
 ## Features
@@ -42,6 +42,7 @@ Monorepo for a streaming chat app with file uploads and optional RAG. Frontend i
 - Python 3.13+ (virtualenv recommended)
 - PostgreSQL (DATABASE_URL required)
 - Optional:
+  - Open API key for LLM
   - Gemini API key for LLM and embeddings
   - Ollama (local LLM), e.g. `ollama pull llama3.2`
 
@@ -125,6 +126,7 @@ npm run preview
   - Recent chat history (DB or in-memory)
   - Uploaded file text and top-k RAG snippets (if Gemini embeddings available)
 - Providers:
+  - OpenAI via [OpenAIProvider](backend/app/services/providers_openai.py)
   - Gemini via [GeminiProvider](backend/app/services/providers_gemini.py)
   - Ollama via [OllamaProvider](backend/app/services/providers_ollama.py)
 - File uploads (PDF/TXT/CSV) populate context and optional FAISS index (requires `GEMINI_API_KEY`) in [rag_store](backend/app/services/rag_store.py).
@@ -209,7 +211,7 @@ flowchart LR
   - Pros (SSE): simpler, native in browsers, works over HTTP/2, easy server implementation via [`backend.app.core.sse`](backend/app/core/sse.py)
   - Cons: server-to-client only; custom recovery/backpressure needed. WebSockets would allow bidirectional control but add complexity.
 
-- Provider abstraction (Gemini, Ollama)
+- Provider abstraction (OpenAI, Gemini, Ollama)
   - Pros: swap models based on preferences via [`backend.app.services.context_store`](backend/app/services/context_store.py) and [`backend.app.services.orchestrator`](backend/app/services/orchestrator.py)
   - Cons: capability drift across providers; testing matrix grows; need careful prompt normalization.
 
@@ -249,7 +251,7 @@ flowchart LR
 
 - Backend: install/start
   - `pip install -r backend/requirements.txt`
-  - `uvicorn app.main:app --reload --port 8000` (from backend/)
+  - `uvicorn app.main:app --reload --host localhost --port 8000` (from backend/)
 - Frontend: dev/build
   - `npm run dev`
   - `npm run build`
