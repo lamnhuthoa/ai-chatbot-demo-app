@@ -1,0 +1,120 @@
+.messageListRoot {
+  flex-grow: 1;
+  padding: 16px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.messageListEmptyState {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.messageListLoadingState {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.messageBubble {
+  max-width: 85%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.messageBubbleUser {
+  align-self: flex-end;
+  background: #eef6ff;
+}
+
+.messageBubbleAssistant {
+  align-self: flex-start;
+  background: #fafafa;
+}
+
+/* Justify assistant paragraphs only (avoid affecting code blocks) */
+.messageBubbleAssistant p {
+  text-align: justify;
+}
+
+.messageBubbleAssistant.streaming {
+  animation: fadePulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes fadePulse {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tokenTrail {
+  display: inline-block;
+  animation: tokenFade 280ms ease-out 1;
+}
+
+@keyframes tokenFade {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Scroll-to-bottom overlay */
+.scrollToBottomBar {
+  position: sticky;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0 8px 0;
+  pointer-events: none; /* avoid intercepting scroll; button re-enables */
+}
+
+.scrollToBottomInner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.scrollToButton {
+  z-index: 10 !important;
+  pointer-events: all;
+}
+
+.scrollFade {
+  width: 100%;
+  position: absolute;
+  bottom: -1.5rem; /* fade sits just above the bar */
+  left: 0;
+  right: 0;
+  height: 10rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.messageBubble p,
+.messageBubble ul,
+.messageBubble ol {
+  margin: 0 0 8px 0;
+}
+
+.messageBubble p:last-child,
+.messageBubble ul:last-child,
+.messageBubble ol:last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,30 @@
+.fileUploadControlRoot {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fileUploadControlHint {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.fileUploadControlInput {
+  display: none;
+}
+
+.fileUploadControlActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.fileUploadMeta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.fileUploadFileName {
+  color: rgba(0, 0, 0, 0.8);
+}

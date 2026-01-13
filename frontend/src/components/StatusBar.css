@@ -1,0 +1,17 @@
+.statusBarRoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statusBarSession {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.statusBarMessage {
+  font-size: 12px;
+  color: #b00020;
+}

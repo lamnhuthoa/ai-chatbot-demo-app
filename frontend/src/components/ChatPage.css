@@ -1,0 +1,70 @@
+.chatPageRoot {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatPageToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatPageTitle {
+  flex-grow: 1;
+}
+
+.chatPageSubtitle {
+  opacity: 0.9;
+}
+
+.chatPageContainer {
+  width: 100%;
+  max-width: 60rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  position: relative;
+  height: 100%;
+}
+
+.chatPageWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex: 1 1 auto;
+  height: calc(100vh - 53px);
+  overflow: hidden;
+}
+
+.chatPageControls {
+  padding: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chatPageFileControl {
+  display: flex;
+}
+
+.chatMain {
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* allow children to shrink/scroll */
+}
+
+.messageListWrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.messageListWrapper > .messageListRoot {
+  flex: 1 1 auto;
+}

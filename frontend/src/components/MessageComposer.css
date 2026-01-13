@@ -1,0 +1,33 @@
+.messageComposerRoot {
+  margin-top: 16px;
+  padding: 12px;
+}
+
+.messageComposerRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.messageComposerButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.messageComposerArea {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.messageComposerInput {
+  display: flex;
+  gap: 8px;
+}
+
+/* Prevent user from resizing the textarea with mouse */
+.messageComposerRoot textarea {
+  resize: none;
+}
