@@ -210,6 +210,17 @@ export default function ChatPage() {
               setOverlayMessages([]);
               setDraftMessage("");
             }
+            // Switching to a different existing conversation: clear transient overlay state
+            if (id != null && id !== currentChatId) {
+              if (cancelStreamingFunctionReference.current) {
+                cancelStreamingFunctionReference.current();
+                cancelStreamingFunctionReference.current = null;
+              }
+              setIsStreaming(false);
+              setStatusMessage(null);
+              setOverlayMessages([]);
+              setDraftMessage("");
+            }
             setCurrentChatId(id);
           }}
         />

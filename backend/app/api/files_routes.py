@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import csv as _csv
 from typing import Dict
 
 import pandas as pd
@@ -25,20 +26,78 @@ async def upload_file(
             reader = PyPDF2.PdfReader(file.file)
             text = "\n".join(page.extract_text() or "" for page in reader.pages)
             context_store.set_text(session_id, text)
+            rag_store.clear(session_id)
             indexed = rag_store.upsert_text(session_id, text)
             return {"filename": file.filename, "pages": len(reader.pages), "rag_indexed": indexed}
         elif fname.endswith(".txt"):
             content = (await file.read()).decode("utf-8", errors="ignore")
             context_store.set_text(session_id, content)
+            rag_store.clear(session_id)
             indexed = rag_store.upsert_text(session_id, content)
             return {"filename": file.filename, "tokens": len(content.split()), "rag_indexed": indexed}
         elif fname.endswith(".csv"):
-            content = (await file.read()).decode("utf-8", errors="ignore")
-            df = pd.read_csv(io.StringIO(content))
+            # Read bytes and try multiple encodings commonly seen in exported expense CSVs
+            raw = await file.read()
+            encoding_used = "utf-8"
+            content: str | None = None
+            for enc in ("utf-8-sig", "utf-8", "utf-16", "latin-1"):
+                try:
+                    content = raw.decode(enc)
+                    encoding_used = enc
+                    break
+                except UnicodeDecodeError:
+                    continue
+            if content is None:
+                content = raw.decode("utf-8", errors="ignore")
+
+            # Detect delimiter with csv.Sniffer; fallback by simple heuristics
+            sample = content[:8192]
+            sep = ","
+            try:
+                dialect = _csv.Sniffer().sniff(sample, delimiters=",;\t|")
+                sep = dialect.delimiter  # type: ignore[attr-defined]
+            except Exception:
+                if sample.count(";") > sample.count(","):
+                    sep = ";"
+                elif "\t" in sample:
+                    sep = "\t"
+                elif "|" in sample:
+                    sep = "|"
+                else:
+                    sep = ","
+
+            # Try reading with pandas, then retry with fallbacks (decimal/thousands, alt sep)
+            def _read_csv(text: str, **kwargs):
+                return pd.read_csv(io.StringIO(text), **kwargs)
+
+            df = None
+            try:
+                df = _read_csv(content, sep=sep, engine="python")
+            except Exception:
+                # Retry with common European decimal comma when using semicolon sep
+                try:
+                    if sep == ";":
+                        df = _read_csv(content, sep=sep, engine="python", decimal=",")
+                    else:
+                        df = _read_csv(content, sep=sep, engine="python")
+                except Exception:
+                    # Final fallback: toggle sep between comma and semicolon
+                    alt_sep = ";" if sep == "," else ","
+                    df = _read_csv(content, sep=alt_sep, engine="python")
+
+            # Normalize to CSV text for downstream context / RAG
             csv_text = df.to_csv(index=False)
             context_store.set_text(session_id, csv_text)
+            rag_store.clear(session_id)
             indexed = rag_store.upsert_text(session_id, csv_text)
-            return {"filename": file.filename, "columns": list(df.columns), "rag_indexed": indexed}
+            return {
+                "filename": file.filename,
+                "columns": list(df.columns),
+                "rows": int(len(df)),
+                "encoding": encoding_used,
+                "sep": sep,
+                "rag_indexed": indexed,
+            }
         else:
             raise HTTPException(status_code=400, detail="Unsupported file type. Use PDF/TXT/CSV.")
     finally:

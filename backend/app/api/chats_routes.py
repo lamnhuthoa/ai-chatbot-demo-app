@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.core.db import Base, engine, get_db
+from app.services.context_store import context_store
+from app.services.rag_store import rag_store
 from app.models import Chat, Message
 
 
@@ -55,6 +57,9 @@ def create_chat(body: ChatCreate, db: Session = Depends(get_db)) -> ChatOut:
     db.add(chat)
     db.commit()
     db.refresh(chat)
+    # Clear any uploaded file context and vector index for this session
+    context_store.set_text(body.session_id, "")
+    rag_store.clear(body.session_id)
     return ChatOut.model_validate(chat)
 
 
