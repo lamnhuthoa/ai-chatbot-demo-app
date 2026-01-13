@@ -103,6 +103,7 @@ export default function MessageComposer(parameters: {
             >
               <option value="gemini-2.5-flash">gemini-2.5-flash</option>
               <option value="llama3.2">llama3.2</option>
+              <option value="gpt-4o-mini">gpt-4o-mini</option>
             </Select>
 
             <Button

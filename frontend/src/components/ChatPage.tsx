@@ -245,7 +245,9 @@ export default function ChatPage() {
               onAttachmentRemoved={(index) => setPendingAttachments((prev) => prev.filter((_, i) => i !== index))}
               onModelChange={(value) => {
                 setSelectedModel(value);
-                const provider = value.startsWith("gemini")
+                const provider = value.startsWith("gpt-")
+                  ? "openai"
+                  : value.startsWith("gemini")
                   ? "gemini"
                   : "ollama";
                 // Persist immediately when model changes (non-blocking)

@@ -8,6 +8,7 @@ from app.services.llm_base import LLMStreamingProvider
 from app.services.providers_langchain import LangchainGeminiProvider, LangchainOllamaProvider
 from app.services.providers_ollama import OllamaProvider
 from app.services.providers_gemini import GeminiProvider
+from app.services.providers_openai import OpenAIProvider
 from app.core.db import SessionLocal
 from app.models import Chat, Message
 
@@ -21,6 +22,7 @@ class Orchestrator:
         self._providers: Dict[str, LLMStreamingProvider] = {
             "gemini": GeminiProvider(),
             "ollama": OllamaProvider(),
+            "openai": OpenAIProvider(),
         }
         self._default_provider = "gemini"
 
@@ -103,6 +105,12 @@ class Orchestrator:
         session_provider, session_model = context_store.get_preferences(session_id)
         provider_key = provider or session_provider or self._default_provider
         model_name = model or session_model
+        # Auto-pick provider by model name if not explicitly provided
+        if provider is None and model_name:
+            if model_name.startswith("gpt-"):
+                provider_key = "openai"
+            elif model_name.startswith("gemini"):
+                provider_key = "gemini"
         # Fallback to default if unknown provider key appears
         if provider_key not in self._providers:
             provider_key = self._default_provider

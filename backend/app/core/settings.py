@@ -10,6 +10,9 @@ class AppSettings(BaseSettings):
     gemini_api_key: Optional[str] = None
     allowed_origins: str = "http://localhost:5173"
     gemini_model: str = "gemini-2.5-flash"
+    # OpenAI
+    openai_api_key: Optional[str] = None
+    openai_model: str = "gpt-4o-mini"
 
     # Pydantic v2 style settings config
     model_config = SettingsConfigDict(

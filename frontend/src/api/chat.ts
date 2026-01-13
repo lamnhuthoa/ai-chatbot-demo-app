@@ -129,7 +129,7 @@ export function useAgentPreferencesQuery(sessionIdentifier: string) {
 export function useSetAgentPreferencesMutation(sessionIdentifier: string) {
   return useMutation({
     mutationFn: async (payload: {
-      provider: "gemini" | "ollama";
+      provider: "gemini" | "ollama" | "openai";
       model: string;
     }) => {
       const response = await httpClient.post<AgentPreference>(

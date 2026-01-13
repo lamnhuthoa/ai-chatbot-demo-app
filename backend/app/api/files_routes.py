@@ -30,11 +30,24 @@ async def upload_file(
             indexed = rag_store.upsert_text(session_id, text)
             return {"filename": file.filename, "pages": len(reader.pages), "rag_indexed": indexed}
         elif fname.endswith(".txt"):
-            content = (await file.read()).decode("utf-8", errors="ignore")
+            raw = await file.read()
+            # Try multiple encodings commonly seen in exported text files
+            content: str | None = None
+            used = "utf-8"
+            for enc in ("utf-8-sig", "utf-8", "utf-16", "latin-1"):
+                try:
+                    content = raw.decode(enc)
+                    used = enc
+                    break
+                except UnicodeDecodeError:
+                    continue
+            if content is None:
+                content = raw.decode("utf-8", errors="ignore")
+
             context_store.set_text(session_id, content)
             rag_store.clear(session_id)
             indexed = rag_store.upsert_text(session_id, content)
-            return {"filename": file.filename, "tokens": len(content.split()), "rag_indexed": indexed}
+            return {"filename": file.filename, "encoding": used, "tokens": len(content.split()), "rag_indexed": indexed}
         elif fname.endswith(".csv"):
             # Read bytes and try multiple encodings commonly seen in exported expense CSVs
             raw = await file.read()
